@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :answer do
-    text { "MyString" }
-    user { nil }
-    question { nil }
+    text { "新規の回答です。参考にしてください。" }
+    user
+    question
   end
 end
