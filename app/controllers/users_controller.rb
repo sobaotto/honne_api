@@ -1,7 +1,8 @@
 class UsersController < ApplicationController
   def create
     if current_user.nil?
-      User.create(create_params)
+      user = User.create(create_params)
+      session[:user_id] = user.id
     end
   end
 
