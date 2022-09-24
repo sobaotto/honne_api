@@ -13,7 +13,6 @@ RSpec.describe "DELETE /logout", type: :request do
 
     it "ログアウト状態になる" do
       login_params = { 
-        name: user.name,
         email: user.email,
         password: user.password
       }

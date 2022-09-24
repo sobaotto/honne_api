@@ -7,7 +7,6 @@ RSpec.describe "POST /questions", type: :request do
     context 'user_aでログインしている場合' do
       before :each do
         login_params = { 
-          name: user_a.name,
           email: user_a.email,
           password: user_a.password
         }
