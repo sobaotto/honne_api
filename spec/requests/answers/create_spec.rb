@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe "POST /answers", type: :request do
-  let(:user_a) { FactoryBot.create(:user, name: 'user_a') }
-  let(:user_b) { FactoryBot.create(:user, name: 'user_b') }
-  let(:question) { FactoryBot.create(:question, user: user_b) }
+  let(:user_a) { create(:user, name: 'user_a') }
+  let(:user_b) { create(:user, name: 'user_b') }
+  let(:question) { create(:question, user: user_b) }
 
   describe '回答投稿機能' do
     context 'user_aでログインしている場合' do

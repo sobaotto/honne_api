@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe "GET /questions", type: :request do
-  let(:user_a) { FactoryBot.create(:user, name: 'user_a') }
-  let(:user_b) { FactoryBot.create(:user, name: 'user_b') }
+  let(:user_a) { create(:user, name: 'user_a') }
+  let(:user_b) { create(:user, name: 'user_b') }
 
   describe '質問詳細機能' do
     context 'user_aでログインしている場合' do
@@ -16,7 +16,7 @@ RSpec.describe "GET /questions", type: :request do
       end
       
       context '公開されている質問の場合' do
-        let(:question) { FactoryBot.create(:question, public_flag: true) }
+        let(:question) { create(:question, public_flag: true) }
 
         it "詳細が取得できる" do
           get "/questions/#{question.id}"
@@ -32,8 +32,8 @@ RSpec.describe "GET /questions", type: :request do
       end
 
       context '公開されていない質問の場合' do
-        let(:question_of_user_a) { FactoryBot.create(:question, public_flag: false, user: user_a) }
-        let(:question_of_user_b) { FactoryBot.create(:question, public_flag: false, user: user_b) }
+        let(:question_of_user_a) { create(:question, public_flag: false, user: user_a) }
+        let(:question_of_user_b) { create(:question, public_flag: false, user: user_b) }
 
         it "user_aの非公開質問の詳細が、取得できる" do
           get "/questions/#{question_of_user_a.id}"

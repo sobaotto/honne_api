@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "POST /questions", type: :request do
-  let!(:user_a) { FactoryBot.create(:user, name: 'user_a') }
+  let!(:user_a) { create(:user, name: 'user_a') }
 
   describe '質問投稿機能' do
     context 'user_aでログインしている場合' do
