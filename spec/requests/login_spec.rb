@@ -6,11 +6,7 @@ RSpec.describe "POST /login", type: :request do
 
     context "入力されたemailに紐づくユーザー情報が存在する場合" do
       it "正しいパラメーターでログイン状態になる" do
-        login_params = { 
-          email: user.email,
-          password: user.password
-        }
-        post "/login", params: login_params
+        login(user: user)
   
         expect(response).to have_http_status(:success)
         
@@ -20,11 +16,7 @@ RSpec.describe "POST /login", type: :request do
       end
 
       it "誤ったパラメーターではログインできない" do
-        login_params = { 
-          email: user.email,
-          password: 'wrong_password'
-        }
-        post "/login", params: login_params
+        login(user: user, password: 'wrong_password')
 
         expect(response).to have_http_status(:bad_request)
         
@@ -35,10 +27,7 @@ RSpec.describe "POST /login", type: :request do
 
     context "入力されたemailに紐づくユーザー情報が存在しない場合" do
       it "ログインできない" do
-        login_params = { 
-          email: 'nonexistent_email',
-        }
-        post "/login", params: login_params
+        login(email: 'unknown@example.com')
 
         expect(response).to have_http_status(:bad_request)
         

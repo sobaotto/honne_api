@@ -8,11 +8,7 @@ RSpec.describe "POST /answers", type: :request do
   describe '回答投稿機能' do
     context 'user_aでログインしている場合' do
       before :each do
-        login_params = { 
-          email: user_a.email,
-          password: user_a.password
-        }
-        post "/login", params: login_params
+        login(user: user_a)
       end
   
       it "user_bの質問に、新規で回答できる" do

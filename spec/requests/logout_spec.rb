@@ -12,12 +12,7 @@ RSpec.describe "DELETE /logout", type: :request do
     # end
 
     it "ログアウト状態になる" do
-      login_params = { 
-        email: user.email,
-        password: user.password
-      }
-
-      post "/login", params: login_params
+      login(user: user)
       expect(response).to have_http_status(:success)
 
       delete "/logout"

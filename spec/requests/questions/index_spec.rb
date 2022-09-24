@@ -7,11 +7,7 @@ RSpec.describe "GET /questions", type: :request do
   describe '質問一覧機能' do
     context 'user_aでログインしている場合' do
       before :each do
-        login_params = { 
-          email: user_a.email,
-          password: user_a.password
-        }
-        post "/login", params: login_params
+        login(user: user_a)
       end
   
       it "公開されている質問一覧が取得できる" do
