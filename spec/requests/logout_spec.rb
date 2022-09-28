@@ -4,7 +4,7 @@ RSpec.describe "DELETE /logout", type: :request do
   describe "ログイン機能" do
     let(:user) { create(:user) }
 
-    # モックを使ってテストしたいが上手くいかない。
+    # 疑問：モックを使ってテストしたいが上手くいかない。
     # let(:mocked_session) { double() }
 
     # before do
