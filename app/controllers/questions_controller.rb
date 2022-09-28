@@ -1,34 +1,20 @@
 class QuestionsController < ApplicationController
   def index
-    user_to_search_for = User.find_by(name: index_params[:name]) if index_params
-
-    if user_to_search_for
-      if user_to_search_for == current_user
-        @questions = current_user.questions
-      else
-        @questions = user_to_search_for.questions.where(public_flag: true)
-      end
-    else
-      @questions = Question.where(public_flag: true)
-    end
+    @questions = get_questions(user_to_search_for)
   end
 
   def show
-    target_question = Question.find(show_params[:id])
-    if target_question.public_flag
-      @question = target_question
-    else
-      if target_question.user_id == current_user.id
-        @question = target_question
-      else
-        @message = 'アクセス権限がありません'
-      end
-    end
+    @question = get_question(show_params[:id])
   end
 
   def create
-    if current_user
-      Question.create(create_params.merge(user: current_user))
+    return render json: { errors: { message: 'ログインしてください' } }, status: :unauthorized if current_user.nil?
+
+    begin
+      @question = Question.create!(create_params.merge(user: current_user))
+    rescue
+      # StandardErrorを使う時はどんなとき？ユーザーに返すのは、オブジェクトで返すべきな気がする？
+      return render json: { errors: { message: '処理が失敗しました' } }, status: :bad_request
     end
   end
 
@@ -44,5 +30,37 @@ class QuestionsController < ApplicationController
 
   def show_params
     params.permit(:id)
+  end
+
+  def user_to_search_for
+    User.find_by(name: index_params[:name]) if index_params
+  end
+
+  def is_current_user(user)
+    user.id === current_user.id
+  end
+
+  def get_questions(user)
+    # 公開されている質問取得する
+    return Question.is_public if user.nil?
+    # 自分の質問を取得する
+    return user.questions if is_current_user(user)
+    # 特定のユーザーの公開されている質問を取得する
+    return user.questions.is_public
+  end
+
+  def is_own_question(question)
+    question.user_id == current_user.id
+  end
+
+  def get_question(id)
+    question = Question.find(id)
+
+    # 公開されている質問の場合
+    return question if question.is_public
+    # 自分の質問の場合
+    return question if is_own_question(question)
+    # アクセス権限がない場合は、404を返す
+    render json: { errors: { message: 'ページが見つかりません' } }, status: :not_found
   end
 end
