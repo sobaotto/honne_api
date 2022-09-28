@@ -3,7 +3,7 @@ class CreateQuestions < ActiveRecord::Migration[7.0]
     create_table :questions do |t|
       t.string :title, null: false
       t.string :text, null: false
-      t.boolean :public_flag, null: false, default: false
+      t.boolean :is_public, null: false, default: false
       t.references :user, null: false, foreign_key: true
 
       t.timestamps

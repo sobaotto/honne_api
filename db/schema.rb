@@ -24,7 +24,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_18_053616) do
   create_table "questions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "title", null: false
     t.string "text", null: false
-    t.boolean "public_flag", default: false, null: false
+    t.boolean "is_public", default: false, null: false
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
