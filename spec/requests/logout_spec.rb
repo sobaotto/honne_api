@@ -11,7 +11,7 @@ RSpec.describe "DELETE /logout", type: :request do
     #     allow_any_instance_of(ActionDispatch::Request).to receive(:session).and_return(mocked_session)
     # end
 
-    it "ログアウト状態になる" do
+    it "ログアウト状態になり、200が帰ってくる" do
       login(user: user)
       expect(response).to have_http_status(:success)
 
