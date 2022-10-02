@@ -3,6 +3,7 @@
 class AnswersController < ApplicationController
   def create
     return render json: { errors: { message: 'ログインしてください' } }, status: :unauthorized if current_user.nil?
+    return render json: { errors: { message: '回答しようとした質問が見つかりません' } }, status: :not_found if target_question.nil?
 
     begin
       @answer = Answer.create!(
@@ -19,10 +20,10 @@ class AnswersController < ApplicationController
   private
 
   def create_params
-    params.permit(:question_id, :text)
+    params.permit(:user_id, :question_id, :text)
   end
 
   def target_question
-    Question.find(create_params[:question_id]) if create_params
+    Question.find_by(id: create_params[:question_id])
   end
 end
