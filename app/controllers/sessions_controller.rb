@@ -4,6 +4,7 @@ class SessionsController < ApplicationController
   def create
     user = User.find_by(email: session_params[:email])
 
+    return render json: { errors: { message: 'すでにログインしています' } }, status: :forbidden if current_user
     return render json: { errors: { message: 'ユーザー情報が見つかりませんでした' } }, status: :not_found if user.nil?
 
     unless user&.authenticate(session_params[:password])
