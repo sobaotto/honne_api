@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class QuestionsController < ApplicationController
   def index
     @questions = get_questions(target_user)
@@ -12,9 +14,9 @@ class QuestionsController < ApplicationController
 
     begin
       @question = Question.create!(create_params.merge(user: current_user))
-    rescue
+    rescue StandardError
       # 疑問：StandardErrorを使う時はどんなとき？ユーザーに返すのは、オブジェクトで返すべきな気がする？
-      return render json: { errors: { message: '処理が失敗しました' } }, status: :bad_request
+      render json: { errors: { message: '処理が失敗しました' } }, status: :bad_request
     end
   end
 
@@ -42,6 +44,7 @@ class QuestionsController < ApplicationController
 
   def is_current_user(user)
     return false if current_user.nil? || user.nil?
+
     user.id === current_user.id
   end
 
@@ -50,13 +53,15 @@ class QuestionsController < ApplicationController
     return Question.is_public if user.nil?
     # 自分の質問を取得する
     return user.questions if is_current_user(user)
+
     # 特定のユーザーの公開されている質問を取得する
-    return user.questions.is_public
+    user.questions.is_public
   end
 
   def is_own_question(question)
     # 疑問：current_userやquestionなどがない場合は、falseではなく、エラーを返すべきか？
     return false if current_user.nil? || question.nil?
+
     question.user_id == current_user.id
   end
 
@@ -67,6 +72,7 @@ class QuestionsController < ApplicationController
     return question if question.is_public
     # 自分の質問の場合
     return question if is_own_question(question)
+
     # アクセス権限がない場合は、404を返す
     render json: { errors: { message: 'ページが見つかりません' } }, status: :not_found
   end

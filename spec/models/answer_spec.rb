@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Answer, type: :model do
@@ -22,11 +24,9 @@ RSpec.describe Answer, type: :model do
 
     context '誤ったパラメータが送られてきた場合' do
       it '新規レコード作成に失敗した時は、例外処理が行われる' do
-        begin
-          Answer.create!()
-        rescue => e
-          expect(e.present?).to eq(true)
-        end
+        Answer.create!
+      rescue StandardError => e
+        expect(e.present?).to eq(true)
       end
     end
   end

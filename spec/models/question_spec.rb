@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Question, type: :model do
@@ -6,10 +8,10 @@ RSpec.describe Question, type: :model do
 
     context '正しいパラメータが送られてきた場合' do
       it '新規にレコードが追加されている' do
-        params = { 
+        params = {
           text: 'これは、質問本文です',
           title: 'これはタイトルです',
-          user: user 
+          user: user
         }
         Question.create!(params)
 
@@ -18,14 +20,12 @@ RSpec.describe Question, type: :model do
         expect(question.text).to eq(params[:text])
       end
     end
-    
+
     context '誤ったパラメータが送られてきた場合' do
       it '新規レコード作成に失敗した時は、例外処理が行われる' do
-        begin
-          Question.create!()
-        rescue => e
-          expect(e.present?).to eq(true)
-        end
+        Question.create!
+      rescue StandardError => e
+        expect(e.present?).to eq(true)
       end
     end
   end
