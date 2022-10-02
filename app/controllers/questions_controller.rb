@@ -6,7 +6,10 @@ class QuestionsController < ApplicationController
   end
 
   def show
-    @question = get_question(quesiton_id)
+    @question = get_question(show_params[:id])
+
+    # アクセス権限がない場合は、404を返す
+    render json: { errors: { message: 'ページが見つかりません(アクセス権限なし)' } }, status: :not_found if @question.nil?
   end
 
   def create
@@ -38,10 +41,6 @@ class QuestionsController < ApplicationController
     User.find_by(name: index_params[:name]) if index_params
   end
 
-  def quesiton_id
-    show_params[:id] if show_params
-  end
-
   def is_current_user(user)
     return false if current_user.nil? || user.nil?
 
@@ -58,22 +57,14 @@ class QuestionsController < ApplicationController
     user.questions.is_public
   end
 
-  def is_own_question(question)
-    # 疑問：current_userやquestionなどがない場合は、falseではなく、エラーを返すべきか？
-    return false if current_user.nil? || question.nil?
-
-    question.user_id == current_user.id
-  end
-
   def get_question(id)
     question = Question.find(id)
 
     # 公開されている質問の場合
     return question if question.is_public
     # 自分の質問の場合
-    return question if is_own_question(question)
+    return question if question.own_question?(current_user)
 
-    # アクセス権限がない場合は、404を返す
-    render json: { errors: { message: 'ページが見つかりません' } }, status: :not_found
+    nil
   end
 end
