@@ -9,4 +9,8 @@ class User < ApplicationRecord
   validates :name, presence: true, uniqueness: true, length: { minimum: 2, maximum: 30 },
                    format: { with: /\A[A-Za-z0-9_-]+\z/ }
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+
+  def match?(target_user)
+    id == target_user.id
+  end
 end

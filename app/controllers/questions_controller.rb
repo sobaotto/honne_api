@@ -42,17 +42,11 @@ class QuestionsController < ApplicationController
     show_params[:id] if show_params
   end
 
-  def is_current_user(user)
-    return false if current_user.nil? || user.nil?
-
-    user.id === current_user.id
-  end
-
   def get_questions(user)
     # 公開されている質問取得する
     return Question.is_public if user.nil?
     # 自分の質問を取得する
-    return user.questions if is_current_user(user)
+    return user.questions if user.match?(current_user)
 
     # 特定のユーザーの公開されている質問を取得する
     user.questions.is_public
