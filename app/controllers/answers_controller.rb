@@ -1,16 +1,18 @@
+# frozen_string_literal: true
+
 class AnswersController < ApplicationController
   def create
-    if current_user
-      question = Question.find(create_params[:question_id])
+    return render json: { errors: { message: 'ログインしてください' } }, status: :unauthorized if current_user.nil?
 
-      Answer.create(
+    begin
+      @answer = Answer.create!(
         text: create_params[:text],
-        question: question,
+        question: target_question,
         user: current_user
       )
-      @message = '回答しました'
-    else
-      @message = 'ログインしてください'
+    rescue StandardError
+      # 疑問：StandardErrorを使う時はどんなとき？ユーザーに返すのは、オブジェクトで返すべきな気がする？
+      render json: { errors: { message: '処理が失敗しました' } }, status: :bad_request
     end
   end
 
@@ -18,5 +20,9 @@ class AnswersController < ApplicationController
 
   def create_params
     params.permit(:question_id, :text)
+  end
+
+  def target_question
+    Question.find(create_params[:question_id]) if create_params
   end
 end

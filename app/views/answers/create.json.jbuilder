@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-json.set! :message, @message
+json.extract! @answer, :id, :text, :question_id, :user_id, :created_at, :updated_at if @answer.present?

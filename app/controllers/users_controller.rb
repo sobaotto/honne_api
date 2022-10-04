@@ -1,8 +1,15 @@
+# frozen_string_literal: true
+
 class UsersController < ApplicationController
   def create
-    if current_user.nil?
-      user = User.create(create_params)
+    return render json: { errors: { message: 'すでにログインしています' } }, status: :forbidden if current_user
+
+    begin
+      user = User.create!(create_params)
       session[:user_id] = user.id
+    rescue StandardError
+      # 疑問：StandardErrorを使う時はどんなとき？ユーザーに返すのは、オブジェクトで返すべきな気がする？
+      render json: { errors: { message: '処理が失敗しました' } }, status: :bad_request
     end
   end
 
