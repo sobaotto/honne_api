@@ -7,9 +7,9 @@ class UsersController < ApplicationController
     begin
       user = User.create!(create_params)
       session[:user_id] = user.id
-    rescue StandardError
-      # 疑問：StandardErrorを使う時はどんなとき？ユーザーに返すのは、オブジェクトで返すべきな気がする？
-      render json: { errors: { message: '処理が失敗しました' } }, status: :bad_request
+    rescue ActiveRecord::RecordInvalid => e
+      # TODO：レスポンスのテスト
+      render json: { errors: { message: '処理が失敗したので、再度行ってください' } }, status: :bad_request
     end
   end
 
