@@ -26,22 +26,24 @@ RSpec.describe Answer, type: :model do
       end
 
       context '誤ったパラメータが送られてきた場合' do
-        it '新規レコード作成に失敗した時は、例外処理が行われる' do
-          Answer.create!
-        rescue StandardError => e
-          expect(e.present?).to eq(true)
+        context 'パラメータが空の場合' do
+          it '新規レコード作成に失敗し、ActiveRecord::RecordInvalidの例外を吐く' do
+            Answer.create!
+          rescue ActiveRecord::RecordInvalid => e
+            expect(e.class).to eq(ActiveRecord::RecordInvalid)
+          end
         end
       end
     end
 
     context '関連付けたいQuestionのレコードがない場合(削除された場合)' do
-      it '処理は失敗し、404を返す' do
+      it '新規レコード作成に失敗し、ActiveRecord::RecordInvalidの例外を吐く' do
         Question.find(question.id).delete
 
         begin
           Answer.create!(params)
-        rescue StandardError => e
-          e
+        rescue ActiveRecord::RecordInvalid => e
+          expect(e.class).to eq(ActiveRecord::RecordInvalid)
         end
       end
     end
