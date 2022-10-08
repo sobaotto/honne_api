@@ -21,15 +21,15 @@ class QuestionsController < ApplicationController
   end
 
   def destroy
-    return render json: { errors: { message: 'ログインしてください' } }, status: :unauthorized if current_user.nil?
-    return render json: { errors: { message: '削除しようとした質問が見つかりません' } }, status: :not_found if target_question.nil?
+    return render_unauthorized if current_user.nil?
+    return render_not_found if target_question.instance_of?(ActiveRecord::RecordNotFound)
+    return render_not_found unless target_question.own_question?(current_user)
 
-    unless target_question.own_question?(current_user)
-      return render json: { errors: { message: '削除しようとした質問が見つかりません(アクセス権限なし)' } },
-                    status: :not_found
+    begin
+      target_question.destroy!
+    rescue StandardError => e
+      render_bad_request
     end
-
-    target_question.destroy!
   end
 
   private
@@ -46,16 +46,14 @@ class QuestionsController < ApplicationController
     params.permit(:id)
   end
 
-  def delete_params
-    params.permit(:id)
-  end
-
   def target_user
     User.find_by(name: index_params[:name]) if index_params
   end
 
   def target_question
-    Question.find_by(id: delete_params[:id])
+    Question.find_by!(id: params[:id])
+  rescue ActiveRecord::RecordNotFound => e
+    e
   end
 
   def quesiton_id
