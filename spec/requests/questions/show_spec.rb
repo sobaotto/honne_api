@@ -51,7 +51,7 @@ RSpec.describe 'GET /questions', type: :request do
           parsed_response = JSON.parse(response.body, symbolize_names: true)
           errors = parsed_response[:errors]
 
-          expect(errors[:message]).to eq('ページが見つかりません(アクセス権限なし)')
+          expect(errors[:message]).to eq('ページが見つかりません')
         end
       end
     end
