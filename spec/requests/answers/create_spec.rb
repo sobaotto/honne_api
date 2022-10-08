@@ -11,6 +11,7 @@ RSpec.describe 'POST /answers', type: :request do
     context 'user_aでログインしている場合' do
       before :each do
         login(user: user_a)
+        expect(response).to have_http_status(:success)
       end
 
       it 'user_bの質問に、新規で回答でき、200が返ってくる' do
