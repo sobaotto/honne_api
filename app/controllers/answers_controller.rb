@@ -11,7 +11,11 @@ class AnswersController < ApplicationController
         question: target_question,
         user: current_user
       )
+    rescue ActiveRecord::RecordNotFound => e
+      render_bad_request
     rescue ActiveRecord::RecordInvalid => e
+      render_bad_request
+    rescue StandardError => e
       render_bad_request
     end
   end

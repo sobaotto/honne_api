@@ -20,7 +20,7 @@ RSpec.describe Answer, type: :model do
         it '新規にレコードが追加されている' do
           Answer.create!(params)
 
-          answer = Answer.find_by(question_id: question.id, user_id: user_a.id)
+          answer = Answer.find_by!(question_id: question.id, user_id: user_a.id)
           expect(answer.text).to eq(params[:text])
         end
       end
@@ -28,9 +28,7 @@ RSpec.describe Answer, type: :model do
       context '誤ったパラメータが送られてきた場合' do
         context 'パラメータが空の場合' do
           it '新規レコード作成に失敗し、ActiveRecord::RecordInvalidの例外を吐く' do
-            Answer.create!
-          rescue ActiveRecord::RecordInvalid => e
-            expect(e.class).to eq(ActiveRecord::RecordInvalid)
+            expect { Answer.create! }.to raise_error(ActiveRecord::RecordInvalid)
           end
         end
       end
@@ -40,11 +38,7 @@ RSpec.describe Answer, type: :model do
       it '新規レコード作成に失敗し、ActiveRecord::RecordInvalidの例外を吐く' do
         Question.find(question.id).delete
 
-        begin
-          Answer.create!(params)
-        rescue ActiveRecord::RecordInvalid => e
-          expect(e.class).to eq(ActiveRecord::RecordInvalid)
-        end
+        expect { Answer.create!(params) }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
   end
