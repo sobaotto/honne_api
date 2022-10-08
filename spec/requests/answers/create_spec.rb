@@ -12,6 +12,7 @@ RSpec.describe 'POST /answers', type: :request do
       context 'user_aでログインしている場合' do
         before :each do
           login(user: user_a)
+          expect(response).to have_http_status(:success)
         end
 
         context '正しいパラメータが送られてきた場合' do
@@ -40,7 +41,7 @@ RSpec.describe 'POST /answers', type: :request do
               parsed_response = JSON.parse(response.body, symbolize_names: true)
               errors = parsed_response[:errors]
     
-              expect(errors[:message]).to eq('回答しようとした質問が見つかりません')
+              expect(errors[:message]).to eq('ページが見つかりません')
             end
           end
         end
@@ -55,7 +56,7 @@ RSpec.describe 'POST /answers', type: :request do
             parsed_response = JSON.parse(response.body, symbolize_names: true)
             errors = parsed_response[:errors]
   
-            expect(errors[:message]).to eq('処理が失敗したので、再度行ってください')
+            expect(errors[:message]).to eq('処理が失敗しました')
           end
         end
       end

@@ -9,6 +9,7 @@ RSpec.describe 'POST /questions', type: :request do
     context 'ログインしている場合' do
       before :each do
         login(user: user)
+        expect(response).to have_http_status(:success)
       end
 
       it '新規で質問が投稿でき、200が返ってくる' do

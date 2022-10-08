@@ -2,8 +2,8 @@
 
 class AnswersController < ApplicationController
   def create
-    return render json: { errors: { message: 'ログインしてください' } }, status: :unauthorized if current_user.nil?
-    return render json: { errors: { message: '回答しようとした質問が見つかりません' } }, status: :not_found if target_question.nil?
+    return render_unauthorized if current_user.nil?
+    return render_not_found if target_question.nil?
 
     begin
       @answer = Answer.create!(
@@ -12,7 +12,7 @@ class AnswersController < ApplicationController
         user: current_user
       )
     rescue ActiveRecord::RecordInvalid => e
-      render json: { errors: { message: '処理が失敗したので、再度行ってください' } }, status: :bad_request
+      render_bad_request
     end
   end
 
