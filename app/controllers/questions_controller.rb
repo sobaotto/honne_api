@@ -46,7 +46,7 @@ class QuestionsController < ApplicationController
     # 公開されている質問取得する
     return Question.is_public if user.nil?
     # 自分の質問を取得する
-    return user.questions if user.match?(current_user)
+    return user.questions if user.equals?(current_user)
 
     # 特定のユーザーの公開されている質問を取得する
     user.questions.is_public
