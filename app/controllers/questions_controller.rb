@@ -8,8 +8,7 @@ class QuestionsController < ApplicationController
   def show
     @question = get_question(show_params[:id])
 
-    # アクセス権限がない場合は、404を返す
-    render json: { errors: { message: 'ページが見つかりません(アクセス権限なし)' } }, status: :not_found if @question.nil?
+    render_not_found if @question.nil?
   end
 
   def create
