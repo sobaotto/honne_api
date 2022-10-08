@@ -10,6 +10,7 @@ RSpec.describe 'GET /questions', type: :request do
     context 'user_aでログインしている場合' do
       before :each do
         login(user: user_a)
+        expect(response).to have_http_status(:success)
       end
 
       it '公開されている質問一覧が取得できる' do

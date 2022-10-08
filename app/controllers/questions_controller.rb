@@ -12,13 +12,13 @@ class QuestionsController < ApplicationController
   end
 
   def create
-    return render json: { errors: { message: 'ログインしてください' } }, status: :unauthorized if current_user.nil?
+    return render_unauthorized if current_user.nil?
 
     begin
       @question = Question.create!(create_params.merge(user: current_user))
     rescue StandardError
       # 疑問：StandardErrorを使う時はどんなとき？ユーザーに返すのは、オブジェクトで返すべきな気がする？
-      render json: { errors: { message: '処理が失敗しました' } }, status: :bad_request
+      render_bad_request
     end
   end
 
@@ -63,7 +63,5 @@ class QuestionsController < ApplicationController
     return question if question.is_public
     # 自分の質問の場合
     return question if question.own_question?(current_user)
-
-    nil
   end
 end
