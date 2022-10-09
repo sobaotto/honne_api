@@ -30,7 +30,7 @@ RSpec.describe 'POST /answers', type: :request do
 
           context '回答しようとしている質問がない場合(削除された場合)' do
             before :each do
-              delete_question(question_id: question.id)
+              Question.find_by!(id: question.id).destroy!
             end
 
             it '新規回答の処理が失敗し、404を返す' do
