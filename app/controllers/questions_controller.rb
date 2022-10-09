@@ -27,6 +27,9 @@ class QuestionsController < ApplicationController
 
     begin
       target_question.destroy!
+    rescue ActiveRecord::RecordNotDestroyed
+      render_bad_request
+    end
     rescue StandardError
       render_bad_request
     end
