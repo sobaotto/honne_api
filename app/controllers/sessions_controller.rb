@@ -2,11 +2,12 @@
 
 class SessionsController < ApplicationController
   def create
-    user = User.find_by(email: session_params[:email])
-
     return render_forbidden if current_user
-    return render_not_found if user.nil?
-    return render_unauthorized unless user&.authenticate(session_params[:password])
+
+    user = referenced_user
+    return render_not_found if user.instance_of?(ActiveRecord::RecordNotFound)
+    return render_bad_request if user.instance_of?(StandardError)
+    return render_unauthorized unless user&.authenticate(params[:password])
 
     session[:user_id] = user.id
   end
@@ -17,7 +18,11 @@ class SessionsController < ApplicationController
 
   private
 
-  def session_params
-    params.permit(:name, :email, :password)
+  def referenced_user
+    User.find_by!(email: params[:email])
+  rescue ActiveRecord::RecordNotFound => e
+    e
+  rescue StandardError => e
+    e
   end
 end
