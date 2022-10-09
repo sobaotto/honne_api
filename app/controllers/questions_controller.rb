@@ -23,11 +23,11 @@ class QuestionsController < ApplicationController
   def destroy
     return render_unauthorized if current_user.nil?
     return render_not_found if target_question.instance_of?(ActiveRecord::RecordNotFound)
-    return render_not_found unless target_question.own_question?(current_user)
+    return render_not_found_for_unauthorized_user unless target_question.own_question?(current_user)
 
     begin
       target_question.destroy!
-    rescue StandardError => e
+    rescue StandardError
       render_bad_request
     end
   end
@@ -53,6 +53,8 @@ class QuestionsController < ApplicationController
   def target_question
     Question.find_by!(id: params[:id])
   rescue ActiveRecord::RecordNotFound => e
+    e
+  rescue StandardError => e
     e
   end
 
