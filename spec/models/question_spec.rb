@@ -24,9 +24,7 @@ RSpec.describe Question, type: :model do
     context '誤ったパラメータが送られてきた場合' do
       context 'パラメータが空の場合' do
         it '新規レコード作成に失敗し、ActiveRecord::RecordInvalidの例外を吐く' do
-          Question.create!
-        rescue ActiveRecord::RecordInvalid => e
-          expect(e.class).to eq(ActiveRecord::RecordInvalid)
+          expect { Question.create! }.to raise_error(ActiveRecord::RecordInvalid)
         end
       end
     end

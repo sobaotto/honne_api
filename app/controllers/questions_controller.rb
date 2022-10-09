@@ -16,6 +16,8 @@ class QuestionsController < ApplicationController
       @question = Question.create!(create_params)
     rescue ActiveRecord::RecordInvalid
       render_bad_request
+    rescue StandardError
+      render_bad_request
     end
   end
 
