@@ -2,13 +2,18 @@
 
 class QuestionsController < ApplicationController
   def index
-    @questions = get_questions(target_user)
+    user = target_user
+    
+    render_not_found if user.instance_of?(ActiveRecord::RecordNotFound)
+
+    @questions = get_questions(user)
   end
 
   def show
-    @question = get_question(show_params[:id])
+    @question = get_question(params[:id])
 
-    render_not_found if @question.nil?
+    render_not_found if @question.instance_of?(ActiveRecord::RecordNotFound)
+    render_not_found_for_unauthorized_user if @question.nil?
   end
 
   def create
@@ -28,16 +33,18 @@ class QuestionsController < ApplicationController
     params.permit(:text, :title)
   end
 
-  def index_params
-    params.permit(:name)
-  end
-
-  def show_params
-    params.permit(:id)
-  end
-
   def target_user
-    User.find_by(name: index_params[:name]) if index_params
+    target_user_name = params[:name]
+
+    return nil unless target_user_name
+
+    begin
+      User.find_by!(name: target_user_name)
+    rescue ActiveRecord::RecordNotFound => e
+      return e
+    rescue StandardError => e
+      return e
+    end
   end
 
   def is_current_user(user)
@@ -47,21 +54,22 @@ class QuestionsController < ApplicationController
   end
 
   def get_questions(user)
-    # 公開されている質問取得する
     return Question.is_public if user.nil?
-    # 自分の質問を取得する
     return user.questions if is_current_user(user)
 
-    # 特定のユーザーの公開されている質問を取得する
     user.questions.is_public
   end
 
   def get_question(id)
-    question = Question.find(id)
+    begin
+      question = Question.find_by!(id: id)
+    rescue ActiveRecord::RecordNotFound => e
+      return e
+    rescue StandardError => e
+      return e
+    end
 
-    # 公開されている質問の場合
     return question if question.is_public
-    # 自分の質問の場合
     return question if question.own_question?(current_user)
   end
 end
