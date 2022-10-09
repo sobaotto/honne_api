@@ -12,8 +12,8 @@ class QuestionsController < ApplicationController
   def show
     @question = get_question(params[:id])
 
-    render_not_found if @question.instance_of?(ActiveRecord::RecordNotFound)
-    render_not_found_for_unauthorized_user if @question.nil?
+    return render_not_found if @question.instance_of?(ActiveRecord::RecordNotFound)
+    return render_not_found_for_unauthorized_user if @question.nil?
   end
 
   def create
