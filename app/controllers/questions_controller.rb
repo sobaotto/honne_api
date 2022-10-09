@@ -3,8 +3,9 @@
 class QuestionsController < ApplicationController
   def index
     user = target_user
-    
-    render_not_found if user.instance_of?(ActiveRecord::RecordNotFound)
+
+    return render_not_found if user.instance_of?(ActiveRecord::RecordNotFound)
+    return render_bad_request if user.instance_of?(StandardError)
 
     @questions = get_questions(user)
   end
@@ -12,8 +13,9 @@ class QuestionsController < ApplicationController
   def show
     @question = get_question(params[:id])
 
-    render_not_found if @question.instance_of?(ActiveRecord::RecordNotFound)
-    render_not_found_for_unauthorized_user if @question.nil?
+    return render_not_found if @question.instance_of?(ActiveRecord::RecordNotFound)
+    return render_bad_request if user.instance_of?(StandardError)
+    return render_not_found_for_unauthorized_user if @question.nil?
   end
 
   def create
@@ -41,9 +43,9 @@ class QuestionsController < ApplicationController
     begin
       User.find_by!(name: target_user_name)
     rescue ActiveRecord::RecordNotFound => e
-      return e
+      e
     rescue StandardError => e
-      return e
+      e
     end
   end
 
