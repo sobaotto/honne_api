@@ -9,6 +9,7 @@ RSpec.describe 'POST /questions', type: :request do
     context 'ログインしている場合' do
       before :each do
         login(user: user)
+        expect(response).to have_http_status(:success)
       end
       context '正しいパラメータが送られてきた場合' do
         let(:params) { { user_id: user.id, text: 'これは、質問本文です', title: 'これはタイトルです' } }
