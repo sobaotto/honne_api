@@ -11,7 +11,6 @@ class AnswersController < ApplicationController
         user: current_user
       )
     rescue StandardError
-      # 疑問：StandardErrorを使う時はどんなとき？ユーザーに返すのは、オブジェクトで返すべきな気がする？
       render_bad_request
     end
   end
