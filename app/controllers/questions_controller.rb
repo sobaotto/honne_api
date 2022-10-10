@@ -49,15 +49,9 @@ class QuestionsController < ApplicationController
     end
   end
 
-  def is_current_user(user)
-    return false if current_user.nil? || user.nil?
-
-    user.id === current_user.id
-  end
-
   def get_questions(user)
     return Question.is_public if user.nil?
-    return user.questions if is_current_user(user)
+    return user.questions if user.equals?(current_user)
 
     user.questions.is_public
   end

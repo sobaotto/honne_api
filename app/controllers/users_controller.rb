@@ -7,8 +7,9 @@ class UsersController < ApplicationController
     begin
       user = User.create!(create_params)
       session[:user_id] = user.id
+    rescue ActiveRecord::RecordInvalid
+      render_bad_request
     rescue StandardError
-      # 疑問：StandardErrorを使う時はどんなとき？ユーザーに返すのは、オブジェクトで返すべきな気がする？
       render_bad_request
     end
   end
