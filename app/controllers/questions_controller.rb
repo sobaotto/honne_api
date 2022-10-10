@@ -30,6 +30,22 @@ class QuestionsController < ApplicationController
     end
   end
 
+  def destroy
+    return render_unauthorized if current_user.nil?
+
+    question = target_question
+    return render_not_found if question.instance_of?(ActiveRecord::RecordNotFound)
+    return render_not_found_for_unauthorized_user unless question.own_question?(current_user)
+
+    begin
+      question.destroy!
+    rescue ActiveRecord::RecordNotDestroyed
+      render_bad_request
+    rescue StandardError
+      render_bad_request
+    end
+  end
+
   private
 
   def create_params
@@ -48,6 +64,14 @@ class QuestionsController < ApplicationController
     rescue StandardError => e
       e
     end
+  end
+  
+  def target_question
+    Question.find_by!(id: params[:id])
+  rescue ActiveRecord::RecordNotFound => e
+    e
+  rescue StandardError => e
+    e
   end
 
   def get_questions(user)
