@@ -10,13 +10,14 @@ RSpec.describe 'GET /questions', type: :request do
     context 'user_aでログインしている場合' do
       before :each do
         login(user: user_a)
+        expect(response).to have_http_status(:success)
       end
 
       context '公開されている質問の場合' do
         let(:question) { create(:question, is_public: true) }
 
         it '詳細が取得できる' do
-          get "/questions/#{question.id}"
+          get question_path(question.id)
           expect(response).to have_http_status(:success)
 
           question_details = JSON.parse(response.body, symbolize_names: true)
@@ -33,7 +34,7 @@ RSpec.describe 'GET /questions', type: :request do
         let(:question_of_user_b) { create(:question, is_public: false, user: user_b) }
 
         it 'user_aの非公開質問の詳細が取得できる' do
-          get "/questions/#{question_of_user_a.id}"
+          get question_path(question_of_user_a.id)
           expect(response).to have_http_status(:success)
 
           question_details = JSON.parse(response.body, symbolize_names: true)
@@ -45,7 +46,7 @@ RSpec.describe 'GET /questions', type: :request do
         end
 
         it 'user_bの非公開質問の詳細が取得できず、404が返ってくる' do
-          get "/questions/#{question_of_user_b.id}"
+          get question_path(question_of_user_b.id)
           expect(response).to have_http_status(:not_found)
 
           parsed_response = JSON.parse(response.body, symbolize_names: true)

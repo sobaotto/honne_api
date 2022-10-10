@@ -2,78 +2,95 @@
 
 class QuestionsController < ApplicationController
   def index
-    @questions = get_questions(target_user)
+    user = target_user
+
+    return render_not_found if user.instance_of?(ActiveRecord::RecordNotFound)
+    return render_bad_request if user.instance_of?(StandardError)
+
+    @questions = get_questions(user)
   end
 
   def show
-    @question = get_question(quesiton_id)
+    @question = get_question(params[:id])
+
+    return render_not_found if @question.instance_of?(ActiveRecord::RecordNotFound)
+    return render_bad_request if @question.instance_of?(StandardError)
+    return render_not_found_for_unauthorized_user if @question.nil?
   end
 
   def create
-    return render json: { errors: { message: 'ログインしてください' } }, status: :unauthorized if current_user.nil?
+    return render_unauthorized if current_user.nil?
 
     begin
-      @question = Question.create!(create_params.merge(user: current_user))
+      @question = Question.create!(create_params)
+    rescue ActiveRecord::RecordInvalid
+      render_bad_request
     rescue StandardError
-      # 疑問：StandardErrorを使う時はどんなとき？ユーザーに返すのは、オブジェクトで返すべきな気がする？
-      render json: { errors: { message: '処理が失敗しました' } }, status: :bad_request
+      render_bad_request
+    end
+  end
+
+  def destroy
+    return render_unauthorized if current_user.nil?
+
+    question = target_question
+    return render_not_found if question.instance_of?(ActiveRecord::RecordNotFound)
+    return render_not_found_for_unauthorized_user unless question.own_question?(current_user)
+
+    begin
+      question.destroy!
+    rescue ActiveRecord::RecordNotDestroyed
+      render_bad_request
+    rescue StandardError
+      render_bad_request
     end
   end
 
   private
 
   def create_params
-    params.permit(:text, :title)
-  end
-
-  def index_params
-    params.permit(:name)
-  end
-
-  def show_params
-    params.permit(:id)
+    params.permit(:user_id, :text, :title)
   end
 
   def target_user
-    User.find_by(name: index_params[:name]) if index_params
+    target_user_name = params[:name]
+
+    return nil unless target_user_name
+
+    begin
+      User.find_by!(name: target_user_name)
+    rescue ActiveRecord::RecordNotFound => e
+      e
+    rescue StandardError => e
+      e
+    end
   end
-
-  def quesiton_id
-    show_params[:id] if show_params
-  end
-
-  def is_current_user(user)
-    return false if current_user.nil? || user.nil?
-
-    user.id === current_user.id
+  
+  def target_question
+    Question.find_by!(id: params[:id])
+  rescue ActiveRecord::RecordNotFound => e
+    e
+  rescue StandardError => e
+    e
   end
 
   def get_questions(user)
-    # 公開されている質問取得する
     return Question.is_public if user.nil?
-    # 自分の質問を取得する
-    return user.questions if is_current_user(user)
+    return user.questions if user.equals?(current_user)
 
-    # 特定のユーザーの公開されている質問を取得する
     user.questions.is_public
   end
 
-  def is_own_question(question)
-    # 疑問：current_userやquestionなどがない場合は、falseではなく、エラーを返すべきか？
-    return false if current_user.nil? || question.nil?
-
-    question.user_id == current_user.id
-  end
-
   def get_question(id)
-    question = Question.find(id)
+    begin
+      question = Question.find_by!(id: id)
+    rescue ActiveRecord::RecordNotFound => e
+      return e
+    rescue StandardError => e
+      return e
+    end
 
-    # 公開されている質問の場合
     return question if question.is_public
-    # 自分の質問の場合
-    return question if is_own_question(question)
-
-    # アクセス権限がない場合は、404を返す
-    render json: { errors: { message: 'ページが見つかりません' } }, status: :not_found
+    return question if question.own_question?(current_user)
   end
 end
