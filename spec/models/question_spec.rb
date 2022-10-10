@@ -22,10 +22,10 @@ RSpec.describe Question, type: :model do
     end
 
     context '誤ったパラメータが送られてきた場合' do
-      it '新規レコード作成に失敗した時は、例外処理が行われる' do
-        Question.create!
-      rescue StandardError => e
-        expect(e.present?).to eq(true)
+      context 'パラメータが空の場合' do
+        it '新規レコード作成に失敗し、ActiveRecord::RecordInvalidの例外を吐く' do
+          expect { Question.create! }.to raise_error(ActiveRecord::RecordInvalid)
+        end
       end
     end
   end

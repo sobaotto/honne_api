@@ -22,9 +22,10 @@ class QuestionsController < ApplicationController
     return render_unauthorized if current_user.nil?
 
     begin
-      @question = Question.create!(create_params.merge(user: current_user))
+      @question = Question.create!(create_params)
+    rescue ActiveRecord::RecordInvalid
+      render_bad_request
     rescue StandardError
-      # 疑問：StandardErrorを使う時はどんなとき？ユーザーに返すのは、オブジェクトで返すべきな気がする？
       render_bad_request
     end
   end
@@ -32,7 +33,7 @@ class QuestionsController < ApplicationController
   private
 
   def create_params
-    params.permit(:text, :title)
+    params.permit(:user_id, :text, :title)
   end
 
   def target_user
