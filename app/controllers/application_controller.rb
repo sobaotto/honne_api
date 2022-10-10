@@ -24,4 +24,8 @@ class ApplicationController < ActionController::API
   def render_not_found
     render json: { errors: { message: 'ページが見つかりません' } }, status: :not_found
   end
+
+  def render_not_found_for_unauthorized_user
+    render json: { errors: { message: 'ページが見つかりません' } }, status: :not_found
+  end
 end

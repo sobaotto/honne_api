@@ -10,4 +10,10 @@ class Question < ApplicationRecord
   validates :is_public, inclusion: [true, false]
 
   scope :is_public, -> { where(is_public: true) }
+
+  def own_question?(user)
+    return false if user.nil?
+
+    user_id == user.id
+  end
 end
