@@ -8,6 +8,6 @@ module LoginSupport
       email: email || user&.email,
       password: password || user&.password
     }
-    post '/login', params: login_params
+    post login_path, params: login_params
   end
 end
