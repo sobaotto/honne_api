@@ -19,6 +19,8 @@ RSpec.describe Question, type: :model do
         expect(question.title).to eq(params[:title])
         expect(question.text).to eq(params[:text])
       end
+
+      # 回答がついた時に、question_statusが変更されるテストを書く（仕様が決まり次第）
     end
 
     context '誤ったパラメータが送られてきた場合' do
