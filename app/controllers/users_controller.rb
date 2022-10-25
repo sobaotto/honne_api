@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
+  def index
+    return render_unauthorized if current_user.nil?
+
+    @users = User.where.not(id: current_user.id)
+  end
+
   def create
     return render_forbidden if current_user
 
