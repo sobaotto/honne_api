@@ -49,7 +49,7 @@ class QuestionsController < ApplicationController
   private
 
   def create_params
-    params.permit(:user_id, :text, :title)
+    params.permit(:user_id, :text, :title, :is_public, :respondent_id)
   end
 
   def target_user

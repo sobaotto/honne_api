@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_23_150629) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_25_111229) do
   create_table "answers", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "text", null: false
     t.bigint "user_id", null: false
@@ -29,6 +29,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_23_150629) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "question_status", default: "unresolved", null: false
+    t.bigint "respondent_id", null: false
+    t.index ["respondent_id"], name: "index_questions_on_respondent_id"
     t.index ["user_id"], name: "index_questions_on_user_id"
   end
 
@@ -44,4 +46,5 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_23_150629) do
   add_foreign_key "answers", "questions"
   add_foreign_key "answers", "users"
   add_foreign_key "questions", "users"
+  add_foreign_key "questions", "users", column: "respondent_id"
 end
