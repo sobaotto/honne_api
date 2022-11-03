@@ -9,6 +9,7 @@ class Question < ApplicationRecord
   validates :text, presence: true, length: { minimum: 5, maximum: 10_000, message: '5文字以上10000字以下で入力してください' }
   validates :is_public, inclusion: [true, false]
 
+  default_scope -> { order(created_at: :desc) }
   scope :is_public, -> { where(is_public: true) }
 
   def own_question?(user)
