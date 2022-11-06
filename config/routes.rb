@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   defaults format: :json do
     root to: 'questions#index'
 
+    get '/me', to: 'sessions#show'
     post '/login', to: 'sessions#create'
     delete '/logout', to: 'sessions#destroy'
 

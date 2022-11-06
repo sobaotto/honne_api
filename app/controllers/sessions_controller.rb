@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 class SessionsController < ApplicationController
+  def show
+    return render_unauthorized if current_user.nil?
+    return current_user if current_user
+  end
+
   def create
     return render_forbidden if current_user
 
