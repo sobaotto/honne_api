@@ -65,7 +65,7 @@ class QuestionsController < ApplicationController
       e
     end
   end
-  
+
   def target_question
     Question.find_by!(id: params[:id])
   rescue ActiveRecord::RecordNotFound => e
@@ -75,10 +75,10 @@ class QuestionsController < ApplicationController
   end
 
   def get_questions(user)
-    return Question.is_public if user.nil?
-    return user.questions if user.equals?(current_user)
+    return Question.includes(:answer, :respondent).is_public if user.nil?
+    return user.questions.includes(:answer, :respondent) if user.equals?(current_user)
 
-    user.questions.is_public
+    user.questions.includes(:answer, :respondent).is_public
   end
 
   def get_question(id)

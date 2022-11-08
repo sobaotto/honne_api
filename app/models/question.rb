@@ -2,8 +2,9 @@
 
 class Question < ApplicationRecord
   belongs_to :user
+  belongs_to :respondent, class_name: 'User'
 
-  has_many :answers
+  has_one :answer
 
   validates :title, presence: true, length: { minimum: 5, maximum: 120, message: '5文字以上120字以下で入力してください' }
   validates :text, presence: true, length: { minimum: 5, maximum: 10_000, message: '5文字以上10000字以下で入力してください' }
