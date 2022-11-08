@@ -11,11 +11,9 @@ class Answer < ApplicationRecord
   private
 
   def change_question_status
-    begin
-      question_with_answer = Question.find_by!(id: question_id)
-      question_with_answer.update!(question_status: 'resolved')
-    rescue StandardError => e
-      e
-    end
+    question_with_answer = Question.find_by!(id: question_id)
+    question_with_answer.update!(question_status: 'resolved')
+  rescue StandardError => e
+    e
   end
 end
