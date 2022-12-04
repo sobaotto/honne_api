@@ -24,7 +24,7 @@ class SessionsController < ApplicationController
   private
 
   def referenced_user
-    User.find_by!(name: params[:name], email: params[:email])
+    User.find_by!(email: params[:email])
   rescue ActiveRecord::RecordNotFound => e
     e
   rescue StandardError => e
