@@ -6,14 +6,14 @@ RSpec.describe Answer, type: :model do
   describe '新規登録機能' do
     let(:user_a) { create(:user, name: 'user_a') }
     let(:user_b) { create(:user, name: 'user_b') }
-    let(:question) { create(:question, user: user_b) }
+    let(:question) { create(:question, user_id: user_b.id, respondent_id: user_a.id) }
 
     context '正しいパラメータが送られてきた場合' do
       it '新規にレコードが追加されている' do
         params = {
           text: 'これは、回答本文です',
-          user: user_a,
-          question: question
+          user_id: user_a.id,
+          question_id: question.id
         }
         Answer.create!(params)
 

@@ -4,14 +4,14 @@ require 'rails_helper'
 
 RSpec.describe 'DELETE /questions', type: :request do
   describe '質問削除機能' do
-    let(:user_a) { create(:user, name: 'user_a') }
-    let(:user_b) { create(:user, name: 'user_b') }
-    let!(:question) { create(:question, user_id: user_a.id) }
+    let(:questioner) { create(:user, name: 'questioner') }
+    let(:respondent) { create(:user, name: 'respondent') }
+    let!(:question) { create(:question, user_id: questioner.id, respondent_id: respondent.id) }
 
     context 'ログイン状態の場合' do
-      context 'user_aでログインしている場合' do
+      context 'questionerでログインしている場合' do
         before :each do
-          login(user: user_a)
+          login(user: questioner)
         end
 
         context '削除したい質問がある場合' do
@@ -36,9 +36,9 @@ RSpec.describe 'DELETE /questions', type: :request do
         end
       end
 
-      context 'user_bでログインしている場合' do
+      context 'respondentでログインしている場合' do
         before :each do
-          login(user: user_b)
+          login(user: respondent)
         end
 
         it '質問が削除できず、404が返ってくる' do

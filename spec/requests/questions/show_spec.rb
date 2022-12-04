@@ -14,7 +14,7 @@ RSpec.describe 'GET /questions', type: :request do
       end
 
       context '公開されている質問の場合' do
-        let(:question) { create(:question, is_public: true) }
+        let(:question) { create(:question, is_public: true, respondent_id: user_b.id) }
 
         it '詳細が取得できる' do
           get question_path(question.id)
@@ -30,8 +30,8 @@ RSpec.describe 'GET /questions', type: :request do
       end
 
       context '公開されていない質問の場合' do
-        let(:question_of_user_a) { create(:question, is_public: false, user: user_a) }
-        let(:question_of_user_b) { create(:question, is_public: false, user: user_b) }
+        let(:question_of_user_a) { create(:question, is_public: false, user: user_a, respondent_id: user_b.id) }
+        let(:question_of_user_b) { create(:question, is_public: false, user: user_b, respondent_id: user_a.id) }
 
         it 'user_aの非公開質問の詳細が取得できる' do
           get question_path(question_of_user_a.id)

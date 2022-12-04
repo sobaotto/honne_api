@@ -14,43 +14,47 @@ RSpec.describe 'GET /questions', type: :request do
       end
 
       it '公開されている質問一覧が取得できる' do
-        2.times { create(:question, is_public: true) }
+        create(:question, is_public: true, user: user_a, respondent_id: user_b.id)
+        create(:question, is_public: true, user: user_b, respondent_id: user_a.id)
 
         get '/questions'
         expect(response).to have_http_status(:success)
 
-        questions = JSON.parse(response.body, symbolize_names: true)
+        res = JSON.parse(response.body, symbolize_names: true)
+        question_items = res[:question_items]
 
-        expect(questions.size).to eq(2)
+        expect(question_items.size).to eq(2)
       end
 
       it 'user_aの質問だけ一覧で取得できる' do
-        2.times { create(:question, user: user_a) }
-        create(:question, is_public: true, user: user_b)
+        2.times { create(:question, user: user_a, respondent_id: user_b.id) }
+        create(:question, is_public: true, user: user_b, respondent_id: user_a.id)
 
         get "/questions?name=#{user_a.name}"
         expect(response).to have_http_status(:success)
 
-        questions = JSON.parse(response.body, symbolize_names: true)
+        res = JSON.parse(response.body, symbolize_names: true)
+        question_items = res[:question_items]
 
-        expect(questions.size).to eq(2)
-        questions.each do |question|
-          expect(question[:user_id]).to eq(user_a.id)
+        expect(question_items.size).to eq(2)
+        question_items.each do |question_item|
+          expect(question_item[:questioner][:id]).to eq(user_a.id)
         end
       end
 
       it 'user_bの公開されている質問だけ一覧で取得できる' do
-        create(:question, is_public: false, user: user_b)
-        2.times { create(:question, is_public: true, user: user_b) }
+        create(:question, is_public: false, user: user_b, respondent_id: user_a.id)
+        2.times { create(:question, is_public: true, user: user_b, respondent_id: user_a.id) }
 
         get "/questions?name=#{user_b.name}"
         expect(response).to have_http_status(:success)
 
-        questions = JSON.parse(response.body, symbolize_names: true)
+        res = JSON.parse(response.body, symbolize_names: true)
+        question_items = res[:question_items]
 
-        expect(questions.size).to eq(2)
-        questions.each do |question|
-          expect(question[:user_id]).to eq(user_b.id)
+        expect(question_items.size).to eq(2)
+        question_items.each do |question_item|
+          expect(question_item[:questioner][:id]).to eq(user_b.id)
         end
       end
     end

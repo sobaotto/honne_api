@@ -4,14 +4,16 @@ require 'rails_helper'
 
 RSpec.describe Question, type: :model do
   describe '新規登録機能' do
-    let(:user) { create(:user) }
+    let(:questioner) { create(:user) }
+    let(:respondent) { create(:user) }
 
     context '正しいパラメータが送られてきた場合' do
       it '新規にレコードが追加されている' do
         params = {
           text: 'これは、質問本文です',
           title: 'これはタイトルです',
-          user: user
+          user_id: questioner.id,
+          respondent_id: respondent.id
         }
         Question.create!(params)
 

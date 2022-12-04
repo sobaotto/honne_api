@@ -4,17 +4,17 @@ require 'rails_helper'
 
 RSpec.describe 'POST /answers', type: :request do
   describe '回答投稿機能' do
-    let(:user_a) { create(:user, name: 'user_a') }
-    let(:user_b) { create(:user, name: 'user_b') }
-    let(:question) { create(:question, user: user_b) }
+    let(:respondent) { create(:user, name: 'respondent') }
+    let(:questioner) { create(:user, name: 'questioner') }
+    let(:question) { create(:question, user_id: questioner.id, respondent_id: respondent.id) }
 
-    context 'user_aでログインしている場合' do
+    context 'respondentでログインしている場合' do
       before :each do
-        login(user: user_a)
+        login(user: respondent)
         expect(response).to have_http_status(:success)
       end
 
-      it 'user_bの質問に、新規で回答でき、200が返ってくる' do
+      it 'questionerの質問に、新規で回答でき、200が返ってくる' do
         params = { question_id: question.id, text: 'これは、回答本文です' }
 
         post '/answers', params: params
@@ -36,7 +36,7 @@ RSpec.describe 'POST /answers', type: :request do
     end
 
     context 'ログアウト状態の場合' do
-      it 'user_bの質問に、新規で回答できず、401が返ってくる' do
+      it 'questionerの質問に、新規で回答できず、401が返ってくる' do
         params = { question_id: question.id, text: 'これは、回答本文です' }
 
         post '/answers', params: params
